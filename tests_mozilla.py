@@ -20,13 +20,10 @@ def test_youtube_btn(selenium):
     # Ожидание появления нового окна
     WebDriverWait(selenium, 10).until(EC.new_window_is_opened(current_windows))
 
-    # Ждем, пока не появится новое окно
     WebDriverWait(selenium, 10).until(EC.number_of_windows_to_be(2))
 
-    # Получим все окна после нажатия кнопки
     new_windows = selenium.window_handles
 
-    # Переключимся на новое окно
     selenium.switch_to.window(new_windows[-1])
 
     # Проверка, что текущий URL соответствует ожидаемому
@@ -40,20 +37,15 @@ def test_twitch_btn(selenium):
 
     twitch_btn = selenium.find_element(By.CSS_SELECTOR, 'a[href="https://www.twitch.tv/ildarzhe"]')
 
-    # Получим текущее количество окон
     current_windows = selenium.window_handles
     twitch_btn.click()
 
-    # Ожидание появления нового окна
     WebDriverWait(selenium, 10).until(EC.new_window_is_opened(current_windows))
 
-    # Ждем, пока не появится новое окно
     WebDriverWait(selenium, 10).until(EC.number_of_windows_to_be(2))
 
-    # Получим все окна после нажатия кнопки
     new_windows = selenium.window_handles
 
-    # Переключимся на новое окно
     for window_handle in new_windows:
         if window_handle not in current_windows:
             selenium.switch_to.window(window_handle)
@@ -118,23 +110,18 @@ def test_tg_bot_btn(selenium):
     telegram_bot_btn = WebDriverWait(selenium, 10).until(
         EC.presence_of_element_located((By.XPATH, '//a[@href="https://t.me/PriyatniyIldar_bot" and @class="content-description__button button"]'))
     )
-
-    # Прокручиваем страницу до кнопки, если она не видна
+    
     selenium.execute_script("arguments[0].scrollIntoView(true);", telegram_bot_btn)
 
-    # Используем JavaScript для клика
     selenium.execute_script("arguments[0].click();", telegram_bot_btn)
 
     selenium.implicitly_wait(2)
 
-    # Проверяем количество открытых окон
     current_windows = selenium.window_handles
     assert len(current_windows) > 1, "No new window opened after clicking the button"
 
-    # Переключаемся на новое окно
     selenium.switch_to.window(current_windows[-1])
 
-    # Ждем, пока новое окно полностью загрузится
     WebDriverWait(selenium, 10).until(EC.url_contains("https://t.me/PriyatniyIldar_bot"))
 
     expected_url = "https://t.me/PriyatniyIldar_bot"
@@ -144,20 +131,17 @@ def test_tg_bot_btn(selenium):
 # негативный тест, кнопки покупки не работают - прокручивают страницу, вместо перехода на сайт с мерчем
 def test_merch_buttons(selenium):
 
-    # Находим все кнопки для покупки товаров
     buy_buttons = selenium.find_elements(By.CSS_SELECTOR, '.card__link')
 
-    # Перебираем каждую кнопку и проверяем её поведение
     for button in buy_buttons:
-        # Прокручиваем страницу к кнопке, чтобы она была видимой
+     
         selenium.execute_script("arguments[0].scrollIntoView(true);", button)
 
         try:
-            # Используем ActionChains для выполнения клика
+            
             action = ActionChains(selenium)
             action.move_to_element(button).click().perform()
 
-            # Ждем, чтобы страница успела обработать событие клика
             selenium.implicitly_wait(2)
 
             # Проверяем, что URL не изменился (то есть, произошла прокрутка, а не переход)
